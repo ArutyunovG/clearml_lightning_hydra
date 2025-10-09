@@ -1,0 +1,14 @@
+# ClearML datasets configuration (download + local copy)
+# Support for multiple datasets
+
+dataset:
+  # Training dataset
+  mnist:
+    dataset_id: null
+    class: MNISTDataset
+    project: open
+    name: mnist
+
+  # Optional custom cache dir; null => ClearML default
+  # Can be overridden per dataset
+  local_copy_dir: null

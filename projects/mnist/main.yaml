@@ -1,0 +1,13 @@
+# Root MNIST config
+defaults:
+  - dataset
+  - training
+  - clearml
+  - _self_
+
+project_name: mnist
+experiment_name: mnist_baseline
+log_level: INFO
+
+paths:
+  out_dir: ${oc.env:CPPLHY_OUT, ./runs/mnist}

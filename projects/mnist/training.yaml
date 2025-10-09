@@ -1,0 +1,6 @@
+# Misc training-related knobs (placeholders for later use)
+train:
+  batch_size: 128
+  num_workers: 4
+  pin_memory: true
+  val_split: 0.1
