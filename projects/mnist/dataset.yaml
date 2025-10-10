@@ -4,11 +4,15 @@
 dataset:
   # Training dataset
   mnist:
-    dataset_id: null
-    class: MNISTDataset
+    class: projects.mnist.src.mnist_dataset.MNISTDataset
     project: open
     name: mnist
-
-  # Optional custom cache dir; null => ClearML default
-  # Can be overridden per dataset
-  local_copy_dir: null
+    dataset_id: null
+    local_copy_dir: 'dataset/mnist'
+    instances:
+      - split: train
+        args: 
+          split: train
+      - split: validation
+        args: 
+          split: test

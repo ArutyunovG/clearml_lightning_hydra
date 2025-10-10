@@ -47,7 +47,7 @@ class ClearMLTask:
         pip_config = config.get("pip")
         if pip_config and "requirements" in pip_config:
             requirements = list(pip_config.requirements)
-            logger.info("Adding %d pip requirements to task", requirements)
+            logger.info(f"Adding {requirements} pip requirements to task")
             self.task.set_packages(list(requirements))
         else:
             logger.debug("No pip requirements found in config")

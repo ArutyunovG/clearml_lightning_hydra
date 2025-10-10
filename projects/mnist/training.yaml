@@ -1,6 +1,53 @@
-# Misc training-related knobs (placeholders for later use)
+# Misc training-related knobs
 train:
+  # data loading
   batch_size: 128
   num_workers: 4
   pin_memory: true
+  shuffle: true
+  drop_last: false
   val_split: 0.1
+
+  # runtime
+  max_epochs: 10
+  precision: 32           # 16, bf16, or 32
+  grad_accum_steps: 1
+  gradient_clip_val: null # e.g., 1.0
+  seed: 42
+  deterministic: true
+
+  # device
+  accelerator: auto       # cpu, gpu, mps, or auto
+  devices: auto           # 1, 2, "auto"
+
+  # loss
+  criterion:
+    class: torch.nn.CrossEntropyLoss
+    args: {}
+
+  # optimizer
+  optimizer:
+    class: torch.optim.AdamW
+    args:
+      lr: 3.0e-4
+      weight_decay: 0.01
+      betas: [0.9, 0.999]
+      eps: 1.0e-8
+      amsgrad: false
+
+  scheduler:
+    enabled: true
+    class: torch.optim.lr_scheduler.OneCycleLR
+    args:
+      max_lr: 3.0e-4
+      pct_start: 0.3
+      anneal_strategy: cos
+      div_factor: 25.0
+      final_div_factor: 1_000.0
+      total_steps: null   # if null, set by code from loader/epochs
+
+  weight_init:
+    enabled: false
+    scheme: "kaiming_normal"
+
+  log_every_n_steps: 10

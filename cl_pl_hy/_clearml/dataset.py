@@ -73,8 +73,6 @@ class ClearMLDataset:
                 "class": dataset_spec.get("class")
             }
 
-            logger.info("Dataset '%s' loaded successfully: %s", dataset_name, local_path)
-            
         except Exception as e:
             logger.error("Failed to load dataset '%s': %s", dataset_name, e)
             # Continue loading other datasets even if one fails
@@ -121,11 +119,11 @@ class ClearMLDataset:
             ds = Dataset.get(dataset_name=name, dataset_project=project, dataset_tags=list(tags or []))
             label = f"name={name}, project={project}, tags={list(tags or [])}"
 
-        logger.info("Resolving ClearML Dataset (%s)", label)
-        
-        ds.get_mutable_local_copy(target=local_copy_dir)
-            
-        logger.info("Local dataset path: %s", local_copy_dir)
+        logger.info(f"Resolving ClearML Dataset ({label})")
+
+        ds.get_mutable_local_copy(target_folder=local_copy_dir, overwrite=True)
+       
+        logger.info(f"Dataset {name} loaded successfully to: {local_copy_dir}")
         return local_copy_dir
 
 
