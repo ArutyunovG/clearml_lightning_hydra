@@ -2,3 +2,6 @@ __pycache__
 .vscode
 build
 outputs
+dataset
+datasets
+runs

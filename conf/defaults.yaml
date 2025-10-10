@@ -1,0 +1,144 @@
+# Default configuration for any experiment
+# Users can override these by redefining them in their specific configs
+
+# Project name (should be overridden by specific projects)
+project_name: default_project
+
+# Python logging configuration
+log_level: INFO
+
+# Hydra configuration - output management  
+hydra:
+  job:
+    chdir: false  # Don't change working directory - let PyTorch Lightning handle paths
+  output_subdir: null  # Don't create .hydra subdirectory
+  run:
+    dir: ${oc.env:CPPLHY_OUT,./runs}/${project_name}  # Run in project-specific output directory
+
+# PyTorch Lightning Logger configuration (generic TensorBoard setup)
+pl_logger:
+  - class: pytorch_lightning.loggers.TensorBoardLogger
+    args:
+      save_dir: ${oc.env:CPPLHY_OUT,./runs}/${project_name}/logs
+      name: "${project_name}_experiment"
+      version: null
+
+# Default training configuration
+train:
+  # Default optimizer configuration (AdamW is a good general choice)
+  optimizer:
+    class: torch.optim.AdamW
+    args:
+      lr: 3.0e-4
+      weight_decay: 0.01
+      betas: [0.9, 0.999]
+      eps: 1.0e-8
+      amsgrad: false
+
+  # Default scheduler configuration (CosineAnnealingLR is generally good)
+  scheduler:
+    enabled: true
+    class: torch.optim.lr_scheduler.CosineAnnealingLR
+    args:
+      T_max: ${epochs}
+      eta_min: 1.0e-6
+
+# PyTorch Lightning Trainer configuration (generic settings)
+trainer:
+  # runtime
+  max_epochs: ${epochs}   # Will be set by specific project configs
+  precision: 32           # 16, bf16, or 32
+  accumulate_grad_batches: 1
+  gradient_clip_val: null # e.g., 1.0
+  
+  # device
+  accelerator: auto       # cpu, gpu, mps, or auto
+  devices: auto           # 1, 2, "auto"
+  
+  # logging and checkpointing
+  log_every_n_steps: 10
+  enable_checkpointing: true
+  enable_progress_bar: true
+  enable_model_summary: true
+  default_root_dir: ${oc.env:CPPLHY_OUT,./runs}/${project_name}
+  
+  # callbacks (generic model checkpointing)
+  callbacks:
+    - class: pytorch_lightning.callbacks.ModelCheckpoint
+      args:
+        dirpath: ${oc.env:CPPLHY_OUT,./runs}/${project_name}/checkpoints
+        filename: "{epoch:02d}-{val/loss:.2f}"
+        monitor: "val/loss"
+        mode: "min"
+        save_top_k: 1
+        save_last: true
+  
+  # reproducibility
+  deterministic: true
+
+# Default DataLoader configuration (reasonable defaults for most experiments)
+dataloader:
+  seed: 42
+  args:
+    shuffle: true
+    num_workers: 4
+    pin_memory: true
+    persistent_workers: true
+    drop_last: false
+
+  # Validation dataloader
+  val_args:
+    shuffle: false
+    num_workers: 4
+    pin_memory: true
+    persistent_workers: true
+    drop_last: false
+
+  # Test dataloader  
+  test_args:
+    shuffle: false
+    num_workers: 4
+    pin_memory: true
+    persistent_workers: true
+    drop_last: false
+
+# ClearML default configuration (generic ML stack)
+clearml:
+  # Default task settings (should be overridden per project)
+  task_name: "train"
+  output_uri: true  # Can be: true (boolean), "s3://bucket/path" (string), or null (not passed)
+
+  # Docker configuration for remote execution (generic ML stack)
+  docker:
+    image: ${oc.env:CPPLHY_DOCKER_IMAGE,"nvidia/cuda:12.4.1-cudnn9-runtime-ubuntu22.04"}
+    args:
+      - --gpus
+      - all
+      - --shm-size=${oc.env:CPPLHY_SHM_GB,16}g
+      - --ipc=host
+    env:
+      - PYTHONUNBUFFERED=1
+      - TZ=${oc.env:TZ,UTC}
+    
+    # Project-specific environment variables (empty by default, override in projects)
+    env_extras: []
+
+  # Python dependencies (common ML stack)
+  pip:
+    requirements:
+      - torch
+      - pytorch-lightning
+      - hydra-core
+      - omegaconf
+      - clearml
+      - opencv-python-headless
+      - tensorboardX
+    
+    # Project-specific pip requirements (empty by default, override in projects)
+    pip_extras: []
+
+# Output paths structure (for convenience - not used in interpolations above)
+paths:
+  output_dir: ${oc.env:CPPLHY_OUT,./runs}/${project_name}
+  checkpoint_dir: ${oc.env:CPPLHY_OUT,./runs}/${project_name}/checkpoints
+  log_dir: ${oc.env:CPPLHY_OUT,./runs}/${project_name}/logs

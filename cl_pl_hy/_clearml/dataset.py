@@ -1,6 +1,7 @@
 # c_pl_hy/_clearml/dataset.py
 from __future__ import annotations
 import os
+import shutil
 from typing import Optional, Sequence, Dict
 import logging
 
@@ -38,7 +39,8 @@ class ClearMLDataset:
         """Load all datasets specified in the configuration."""
         for dataset_name, dataset_spec in self.config.items():
             self._load_single_dataset(dataset_name, dataset_spec)
-    
+
+
     def _load_single_dataset(self, dataset_name: str, dataset_spec: DictConfig) -> None:
         """
         Load a single dataset from its specification.
@@ -121,7 +123,17 @@ class ClearMLDataset:
 
         logger.info(f"Resolving ClearML Dataset ({label})")
 
-        ds.get_mutable_local_copy(target_folder=local_copy_dir, overwrite=True)
+        if os.path.exists(local_copy_dir) and os.path.isdir(local_copy_dir):
+            if ds.verify_dataset_hash(local_copy_dir):
+                logger.warning(f"Local copy at '{local_copy_dir}' does not match remote. Deleting it and re-downloading.")
+                shutil.rmtree(local_copy_dir)
+                ds.get_mutable_local_copy(target_folder=local_copy_dir, overwrite=True)
+            else:
+                logger.info(f"Using up-to-date local copy of {name} at '{local_copy_dir}'")
+        else:
+            if os.path.exists(local_copy_dir):
+                raise ValueError(f"Provided local_copy_dir '{local_copy_dir}' exists but is not a directory.")
+            ds.get_mutable_local_copy(target_folder=local_copy_dir, overwrite=True)
        
         logger.info(f"Dataset {name} loaded successfully to: {local_copy_dir}")
         return local_copy_dir
@@ -130,6 +142,7 @@ class ClearMLDataset:
     def get_dataset_names(self) -> Sequence[str]:
         """Return a list of all loaded dataset names."""
         return list(self.dataset_info.keys())
+
 
     def get_dataset_info(self, dataset_name: str) -> Dict[str, Optional[str]]:
         """
@@ -145,19 +158,4 @@ class ClearMLDataset:
             raise KeyError(f"Dataset '{dataset_name}' not found. Available: {list(self.dataset_info.keys())}")
         return self.dataset_info[dataset_name]
     
-
-    def __len__(self) -> int:
-        """Return the number of loaded datasets."""
-        return len(self.dataset_paths)
-    
-    def __contains__(self, dataset_name: str) -> bool:
-        """Check if a dataset is loaded."""
-        return dataset_name in self.dataset_paths
-    
-    def __getitem__(self, dataset_name: str) -> str:
-        """Get dataset path by name (dict-like access)."""
-        if dataset_name not in self.dataset_paths:
-            raise KeyError(f"Dataset '{dataset_name}' not found. Available: {list(self.dataset_paths.keys())}")
-        return self.dataset_paths[dataset_name]
-
 

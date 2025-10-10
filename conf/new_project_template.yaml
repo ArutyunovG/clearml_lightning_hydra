@@ -1,0 +1,49 @@
+# Example new project main.yaml
+# This shows how to inherit from the shared defaults.yaml
+
+# Add defaults.yaml to the search path
+hydra:
+  searchpath:
+    - pkg://conf
+
+defaults:
+  - defaults    # Load generic defaults from projects/defaults.yaml
+  - model       # Project-specific model config
+  - training    # Project-specific training overrides
+  - dataloader  # Project-specific dataloader overrides (optional)
+  - dataset     # Project-specific dataset config
+  - clearml     # Project-specific ClearML config (optional)
+  - _self_
+
+# Project identifier (used in paths and logging)
+project_name: my_new_project
+
+# =============================================================================
+# PROJECT-SPECIFIC CONFIGURATIONS
+# =============================================================================
+# Use env_extras and pip_extras to add project-specific requirements
+# These will be automatically combined with base configurations
+
+# Example: Add project-specific environment variables
+# clearml:
+#   docker:
+#     env_extras:
+#       - CPPLHY_PROJECT=my_new_project
+#       - CPPLHY_CONFIG_NAME=main
+#       - PROJECT_SPECIFIC_VAR=value
+
+# Example: Add project-specific pip requirements
+# clearml:
+#   pip:
+#     pip_extras:
+#       - scikit-learn      # For ML projects
+#       - matplotlib        # For visualization
+#       - pandas           # For data manipulation
+#       - opencv-python    # For computer vision
+#       - transformers     # For NLP projects
+
+# =============================================================================
+# STANDARD OVERRIDES
+# =============================================================================
+# Any additional project-specific configurations can go here
+# They will override anything from defaults.yaml (without the + prefix)
