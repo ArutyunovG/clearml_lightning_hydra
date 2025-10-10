@@ -1,13 +1,27 @@
-# Root MNIST config
+# Add defaults.yaml to the search path
+hydra:
+  searchpath:
+    - pkg://conf
+
+# Root reusable config
 defaults:
-  - dataset
+  - defaults  # Load generic defaults from conf/defaults.yaml
+  - model
   - training
+  - dataloader
+  - dataset
   - clearml
   - _self_
 
+# Project identifier (used in paths and logging)
 project_name: mnist
-experiment_name: mnist_baseline
-log_level: INFO
 
-paths:
-  out_dir: ${oc.env:CPPLHY_OUT, ./runs/mnist}
+# Additional environment variables for robust remote execution
+clearml:
+  docker:
+    env_extras:
+      - CPPLHY_PROJECT=mnist
+      - CPPLHY_CONFIG_NAME=main
+
+# MNIST-specific overrides would go here if needed
+# (paths, log_level, hydra are now inherited from defaults.yaml)

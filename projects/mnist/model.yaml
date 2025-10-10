@@ -1,0 +1,4 @@
+# Model configuration for MNIST
+model:
+  class: projects.mnist.src.model.Model
+  args: {}

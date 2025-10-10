@@ -1,53 +1,55 @@
-# Misc training-related knobs
+# MNIST-specific training configuration
+epochs: 10
+num_classes: 10
+
+# MNIST-specific training overrides
 train:
-  # data loading
-  batch_size: 128
-  num_workers: 4
-  pin_memory: true
-  shuffle: true
-  drop_last: false
-  val_split: 0.1
-
-  # runtime
-  max_epochs: 10
-  precision: 32           # 16, bf16, or 32
-  grad_accum_steps: 1
-  gradient_clip_val: null # e.g., 1.0
-  seed: 42
-  deterministic: true
-
-  # device
-  accelerator: auto       # cpu, gpu, mps, or auto
-  devices: auto           # 1, 2, "auto"
-
-  # loss
+  # Loss configuration - MNIST uses CrossEntropy
   criterion:
-    class: torch.nn.CrossEntropyLoss
-    args: {}
+    - name: "cross_entropy"
+      class: torch.nn.CrossEntropyLoss
+      weight: 1.0
+      args: {}
+  
+  # Optimizer and scheduler inherited from defaults.yaml
 
-  # optimizer
-  optimizer:
-    class: torch.optim.AdamW
-    args:
-      lr: 3.0e-4
-      weight_decay: 0.01
-      betas: [0.9, 0.999]
-      eps: 1.0e-8
-      amsgrad: false
 
-  scheduler:
-    enabled: true
-    class: torch.optim.lr_scheduler.OneCycleLR
-    args:
-      max_lr: 3.0e-4
-      pct_start: 0.3
-      anneal_strategy: cos
-      div_factor: 25.0
-      final_div_factor: 1_000.0
-      total_steps: null   # if null, set by code from loader/epochs
+# Trainer configuration inherited from defaults.yaml
 
-  weight_init:
-    enabled: false
-    scheme: "kaiming_normal"
 
-  log_every_n_steps: 10
+# Metrics configuration per stage
+metrics:
+  train:
+    # Training metrics - typically lighter to avoid slowing down training
+    accuracy: 
+      class: torchmetrics.Accuracy
+      args:
+        task: multiclass
+        num_classes: ${num_classes}
+  
+  val:
+    # Validation metrics - more comprehensive for model evaluation
+    accuracy: 
+      class: torchmetrics.Accuracy
+      args:
+        task: multiclass
+        num_classes: ${num_classes}
+    f1_score:
+      class: torchmetrics.F1Score
+      args:
+        task: multiclass
+        num_classes: ${num_classes}
+        average: macro
+    precision:
+      class: torchmetrics.Precision
+      args:
+        task: multiclass
+        num_classes: ${num_classes}
+        average: macro
+    recall:
+      class: torchmetrics.Recall
+      args:
+        task: multiclass
+        num_classes: ${num_classes}
+        average: macro
+

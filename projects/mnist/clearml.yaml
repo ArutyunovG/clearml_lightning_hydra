@@ -1,31 +1,6 @@
+# MNIST-specific ClearML configuration
 clearml:
-  # ClearML configuration for remote execution
+  # MNIST project identifier
   project_name: "sandbox/mnist"
-  task_name: "train"
-
-  # Docker configuration for remote execution
-  docker:
-    image: ${oc.env:CPPLHY_DOCKER_IMAGE,"nvidia/cuda:12.4.1-cudnn9-runtime-ubuntu22.04"}
-    args:
-      - --gpus
-      - all
-      - --shm-size=${oc.env:CPPLHY_SHM_GB,16}g
-      - --ipc=host
-    env:
-      - PYTHONUNBUFFERED=1
-      - TZ=${oc.env:TZ,UTC}
-      - CLEARML_API_ACCESS_KEY=${oc.env:CLEARML_API_ACCESS_KEY,}
-      - CLEARML_API_SECRET_KEY=${oc.env:CLEARML_API_SECRET_KEY,}
-
-  # Python dependencies
-  pip:
-    requirements:
-      - torch
-      - pytorch-lightning
-      - hydra-core
-      - omegaconf
-      - clearml
-      - opencv-python-headless
-
-  # Resource configuration
-  shm_size_gb: ${oc.env:CPPLHY_SHM_GB,16}
+  
+  # All other ClearML settings inherited from defaults.yaml

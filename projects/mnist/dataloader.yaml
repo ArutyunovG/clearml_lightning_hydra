@@ -1,0 +1,13 @@
+# MNIST-specific DataLoader configuration
+dataloader:
+  # MNIST-specific batch size (small dataset, can use larger batches)
+  args:
+    batch_size: 128
+
+  val_args:
+    batch_size: 128
+
+  test_args:
+    batch_size: 128
+    
+  # All other dataloader settings inherited from defaults.yaml
