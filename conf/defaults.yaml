@@ -10,6 +10,13 @@ phases:
   testing: false    # Run testing/evaluation phase (after training)
   export: false     # Run model export/conversion phase (after testing)
 
+# Repository management for external dependencies
+repositories:
+  # External repositories to clone and install
+  # Format: {name: {url, branch/tag, install_method}}
+  # Leave empty by default - projects can override this
+  external: {}
+
 # Python logging configuration
 log_level: INFO
 

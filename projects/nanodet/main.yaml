@@ -1,0 +1,48 @@
+# NanoDet-Plus Project Configuration
+# Minimal setup for using NanoDet repository
+
+# Project identifier
+project_name: nanodet
+
+# Repository management - clone and install NanoDet-Plus
+repositories:
+  external:
+    nanodet:
+      url: https://github.com/RangiLyu/nanodet.git
+      branch: main
+      # tag: v1.0.0  # Optional: use specific tag instead of branch
+      install_method: pip_editable  # Install in editable mode for development
+
+# Add defaults.yaml to the search path
+hydra:
+  searchpath:
+    - pkg://conf
+
+# Root reusable config - minimal for now, just repository setup
+defaults:
+  - defaults  # Load generic defaults from conf/defaults.yaml
+  - _self_
+
+# For now, disable all phases - we'll add them back when ready
+phases:
+  training: false
+  testing: false  
+  export: false
+
+# Basic ClearML configuration
+clearml:
+  project_name: "object_detection/nanodet_plus"
+  task_name: "nanodet_setup"
+  
+  # Additional pip requirements for NanoDet-Plus
+  pip:
+    pip_extras:
+      - pycocotools       # For COCO dataset evaluation
+      - termcolor         # For colored terminal output (used by NanoDet)
+      - tabulate          # For table formatting (used by NanoDet)
+  
+  # Docker configuration with additional environment variables
+  docker:
+    env_extras:
+      - CPPLHY_PROJECT=nanodet
+      - CPPLHY_CONFIG_NAME=main

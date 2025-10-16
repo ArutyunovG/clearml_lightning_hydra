@@ -1,6 +1,5 @@
 from omegaconf import DictConfig, OmegaConf
 import logging
-import os
 import pytorch_lightning as pl
 
 from cl_pl_hy.experiment.setup_logging import setup_logging
@@ -8,6 +7,7 @@ from cl_pl_hy.experiment.run_training import run_training
 from cl_pl_hy.experiment.run_testing import run_testing
 from cl_pl_hy.experiment.run_export import run_export
 from cl_pl_hy.experiment.prepare_clearml_datasets import prepare_clearml_datasets
+from cl_pl_hy.experiment.repository_manager import setup_repositories
 from cl_pl_hy._clearml.task import ClearMLTask
 
 
@@ -32,6 +32,11 @@ def experiment_main(cfg: DictConfig) -> None:
    
     # Initialize ClearML Task with the full config (clearml.yaml is merged into root)
     clearml_task = ClearMLTask(clearml_config=cfg.clearml)
+
+    # Set up external repositories (clone and install dependencies)
+    repository_paths = setup_repositories(cfg)
+    if repository_paths:
+        logger.info(f"External repositories ready: {list(repository_paths.keys())}")
 
     # Prepare datasets from ClearML dataset configurations
     created_datasets = prepare_clearml_datasets(cfg)
