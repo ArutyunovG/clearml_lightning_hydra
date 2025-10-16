@@ -3,4 +3,10 @@ clearml:
   # MNIST project identifier
   project_name: "sandbox/mnist"
   
+  # Additional pip requirements for MNIST project (visualization-specific)
+  pip:
+    pip_extras:
+      - matplotlib      # For visualization plots
+      - pillow         # For image handling in ClearML
+  
   # All other ClearML settings inherited from defaults.yaml

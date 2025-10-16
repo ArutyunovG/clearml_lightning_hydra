@@ -53,3 +53,10 @@ metrics:
         num_classes: ${num_classes}
         average: macro
 
+  test:
+    # Test metrics - just accuracy for evaluation
+    accuracy: 
+      class: torchmetrics.Accuracy
+      args:
+        task: multiclass
+        num_classes: ${num_classes}

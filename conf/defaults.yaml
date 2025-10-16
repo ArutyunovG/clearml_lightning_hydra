@@ -4,6 +4,12 @@
 # Project name (should be overridden by specific projects)
 project_name: default_project
 
+# Experiment phases configuration
+phases:
+  training: false   # Run training phase (must be explicitly enabled)
+  testing: false    # Run testing/evaluation phase (after training)
+  export: false     # Run model export/conversion phase (after testing)
+
 # Python logging configuration
 log_level: INFO
 
@@ -67,11 +73,12 @@ trainer:
     - class: pytorch_lightning.callbacks.ModelCheckpoint
       args:
         dirpath: ${oc.env:CPPLHY_OUT,./runs}/${project_name}/checkpoints
-        filename: "{epoch:02d}-{val/loss:.2f}"
-        monitor: "val/loss"
-        mode: "min"
-        save_top_k: 1
-        save_last: true
+        filename: "best"
+        monitor: "val/accuracy" # Metric to monitor for best model, should be defined in metrics config
+        mode: "max"
+        save_top_k: 1          # Save only the best checkpoint
+        save_last: true        # Also save the last checkpoint as "last.ckpt"
+        auto_insert_metric_name: false  # Keep filename clean
   
   # reproducibility
   deterministic: true
@@ -79,7 +86,7 @@ trainer:
 # Default DataLoader configuration (reasonable defaults for most experiments)
 dataloader:
   seed: 42
-  args:
+  train_args:
     shuffle: true
     num_workers: 4
     pin_memory: true
@@ -133,12 +140,27 @@ clearml:
       - clearml
       - opencv-python-headless
       - tensorboardX
+      - onnxruntime
+      - onnxsim
     
     # Project-specific pip requirements (empty by default, override in projects)
     pip_extras: []
+
+# Export configuration (for model conversion and deployment)
+export:
+  # Input shape for model export (batch_size is typically dynamic, so exclude it)
+  input_shape: [3, 224, 224]  # Default: RGB images 224x224 (CHW format)
+  
+  # ONNX-specific settings
+  onnx:
+    opset_version: 11
+    do_constant_folding: true
+    export_params: true
+    simplify: true  # Apply ONNX model simplification using onnxsim
 
 # Output paths structure (for convenience - not used in interpolations above)
 paths:
   output_dir: ${oc.env:CPPLHY_OUT,./runs}/${project_name}
   checkpoint_dir: ${oc.env:CPPLHY_OUT,./runs}/${project_name}/checkpoints
   log_dir: ${oc.env:CPPLHY_OUT,./runs}/${project_name}/logs
+  export_dir: ${oc.env:CPPLHY_OUT,./runs}/${project_name}/exports

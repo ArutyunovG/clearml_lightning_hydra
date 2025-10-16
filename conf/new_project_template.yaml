@@ -19,6 +19,15 @@ defaults:
 project_name: my_new_project
 
 # =============================================================================
+# EXPERIMENT PHASES CONFIGURATION
+# =============================================================================
+# Control which phases of the experiment to run
+# phases:
+#   training: true    # Train the model
+#   testing: false    # Run comprehensive testing/evaluation
+#   export: false     # Export model to deployment format
+
+# =============================================================================
 # PROJECT-SPECIFIC CONFIGURATIONS
 # =============================================================================
 # Use env_extras and pip_extras to add project-specific requirements

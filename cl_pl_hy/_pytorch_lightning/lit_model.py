@@ -60,13 +60,18 @@ class LitModel(pl.LightningModule):
 
         outputs = self(x)
 
-        total_loss = 0.0
-        for name, fn, w in self.losses:
-            l = fn(outputs, y)
-            total_loss = total_loss + (w * l)
-            self.log(f"{stage}/loss_{name}", l, prog_bar=(name == "main"))
+        # Only calculate losses during training phase
+        if stage == "train":
+            total_loss = 0.0
+            for name, fn, w in self.losses:
+                l = fn(outputs, y)
+                total_loss = total_loss + (w * l)
+                self.log(f"{stage}/loss_{name}", l, prog_bar=(name == "main"))
 
-        self.log(f"{stage}/loss", total_loss, prog_bar=True)
+            self.log(f"{stage}/loss", total_loss, prog_bar=True)
+        else:
+            # For validation and testing, we don't need loss computation
+            total_loss = 0.0
         
         # Update metrics (accumulate, don't log yet)
         self._update_metrics(outputs, y, stage)

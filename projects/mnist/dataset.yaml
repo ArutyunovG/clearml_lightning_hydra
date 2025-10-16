@@ -15,4 +15,7 @@ dataset:
           split: train
       - split: validation
         args: 
+          split: test # Reuse MNIST test data for both validation and testing
+      - split: test
+        args: 
           split: test

@@ -11,10 +11,17 @@ defaults:
   - dataloader
   - dataset
   - clearml
+  - export
   - _self_
 
 # Project identifier (used in paths and logging)
 project_name: mnist
+
+# Experiment phases configuration for MNIST
+phases:
+  training: true     # Train the MNIST classifier
+  testing: true      # Test the trained model on test dataset
+  export: true       # Export the model to ONNX format
 
 # Additional environment variables for robust remote execution
 clearml:

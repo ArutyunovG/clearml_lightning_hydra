@@ -1,7 +1,7 @@
 # MNIST-specific DataLoader configuration
 dataloader:
   # MNIST-specific batch size (small dataset, can use larger batches)
-  args:
+  train_args:
     batch_size: 128
 
   val_args:
