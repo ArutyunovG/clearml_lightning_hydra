@@ -143,6 +143,7 @@ clearml:
       - tensorboardX
       - onnxruntime
       - onnxsim
+      - onnxscript
       - pillow         # For image handling in ClearML
 
     # Project-specific pip requirements (empty by default, override in projects)
