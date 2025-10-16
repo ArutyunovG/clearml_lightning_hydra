@@ -7,6 +7,5 @@ clearml:
   pip:
     pip_extras:
       - matplotlib      # For visualization plots
-      - pillow         # For image handling in ClearML
   
   # All other ClearML settings inherited from defaults.yaml

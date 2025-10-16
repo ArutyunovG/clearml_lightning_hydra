@@ -133,6 +133,7 @@ clearml:
   # Python dependencies (common ML stack)
   pip:
     requirements:
+      - networkx==3.2.1
       - torch
       - pytorch-lightning
       - hydra-core
@@ -142,7 +143,8 @@ clearml:
       - tensorboardX
       - onnxruntime
       - onnxsim
-    
+      - pillow         # For image handling in ClearML
+
     # Project-specific pip requirements (empty by default, override in projects)
     pip_extras: []
 
